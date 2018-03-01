@@ -44,7 +44,14 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and X as the axis of rotation.
 ====================*/
 struct matrix *make_rotX(double theta) {
-	return NULL;
+	theta = theta * M_PI / 180.0;
+	struct matrix *m = new_matrix(4, 4);
+	ident(m);
+	m->m[1][1] = cos(theta);
+	m->m[1][2] = sin(theta) * -1;
+	m->m[2][1] = sin(theta);
+	m->m[2][2] = cos(theta);
+	return m;
 }
 
 /*======== struct matrix *make_rotY() ==========
@@ -54,7 +61,14 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Y as the axis of rotation.
 ====================*/
 struct matrix *make_rotY(double theta) {
-	return NULL;
+	theta = theta * M_PI / 180.0;
+	struct matrix *m = new_matrix(4, 4);
+	ident(m);
+	m->m[2][2] = cos(theta);
+	m->m[2][0] = sin(theta) * -1;
+	m->m[0][2] = sin(theta);
+	m->m[0][0] = cos(theta);
+	return m;
 }
 
 /*======== struct matrix *make_rotZ() ==========
@@ -64,6 +78,7 @@ Returns: The rotation matrix created using theta as the
 angle of rotation and Z as the axis of rotation.
 ====================*/
 struct matrix *make_rotZ(double theta) {
+	theta = theta * M_PI / 180.0;
 	struct matrix *m = new_matrix(4, 4);
 	ident(m);
 	m->m[0][0] = cos(theta);
@@ -164,24 +179,22 @@ Returns:
 a*b -> b
 */
 void matrix_mult(struct matrix *a, struct matrix *b) {
-	struct matrix *m = new_matrix(a->rows, b->cols);
-	m->lastcol = b->lastcol;
 	int r, c;
-	for (r = 0; r < m->rows; r ++) {
-		for (c = 0; c < m->cols; c ++) {
-			//printf("Looking at m[%d][%d]: ", r, c);
-			// m[r][c] = multiplying a[r][0...lastcol] by b[0...lastcol][c]
-			double sum = 0;
-			int i;
-			for (i = 0; i < a->cols; i ++) {
-				//printf("Multiplying a[%d][%d] (%0.2f) and b[%d][%d] (%0.2f)\n", r, i, a->m[r][i], i, c, b->m[i][c]);
-				sum += a->m[r][i] *b->m[i][c];
-			}
-			//printf("Sum = %0.2f\n", sum);
-			m->m[r][c] = sum;
+	struct matrix *tmp;
+	tmp = new_matrix(4, 1);
+
+	for (c = 0; c < b->lastcol; c ++) {
+		for (r = 0; r < b->rows; r ++) {
+			tmp->m[r][0] = b->m[r][c];
+		}
+		for (r = 0; r < b->rows; r ++) {
+			b->m[r][c] = a->m[r][0] * tmp->m[0][0] +
+			a->m[r][1] * tmp->m[1][0] +
+			a->m[r][2] * tmp->m[2][0] +
+			a->m[r][3] * tmp->m[3][0];
 		}
 	}
-	*b = *m;
+	free_matrix(tmp);
 }
 
 /*===============================================

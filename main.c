@@ -25,12 +25,11 @@ int main(int argc, char **argv) {
 	matrix_mult(temp, trans);
 	print_matrix(temp);
 	print_matrix(trans);
-	/*
-	temp = make_scale(2, 2, 1);
+	//temp = make_scale(2, 2, 1);
+	temp = make_rotZ(45);
 	matrix_mult(temp, trans);
 	temp = make_translate(100, 100, 0);
 	matrix_mult(temp, trans);
-	*/
 
 	// Square
 	add_edge(edges, 100, 100, 0, 150, 100, 0);

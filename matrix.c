@@ -99,18 +99,18 @@ void print_matrix(struct matrix *m) {
 	int r, c;
 	int count[m->cols]; // For each column, count stores the number of chars the biggest number takes
 	for (c = 0; c < m->cols; c ++) {
-		int tempA = 0;
+		count[c] = 0;
+		int tempA; // copy of each element in the matrix
 		for (r = 0; r < m->rows; r ++) {
-			if (m->m[r][c] > tempA) tempA = m->m[r][c];
-		}
-		int tempB = 0;
-		if (tempA == 0) count[c] = 1;
-		else {
-			while (tempA > 0) {
+			int tempB = 0;
+			tempA = m->m[r][c];
+			if (tempA < 0) tempB ++;
+			if (tempA == 0) tempB = 1;
+			while (tempA != 0) {
 				tempA = tempA / 10;
 				tempB ++;
 			}
-			count[c] = tempB;
+			if (tempB > count[c]) count[c] = tempB;
 		}
 	}
 	for (r = 0; r < m->rows; r ++) {
@@ -118,13 +118,16 @@ void print_matrix(struct matrix *m) {
 		for (c = 0; c < m->cols; c ++) {
 			int ele_count = 0;
 			int temp = m->m[r][c];
+			//printf("ele_count of %d: ", temp);
+			if (temp < 0) ele_count ++;
 			if (temp != 0) {
-				while (temp > 0) {
+				while (temp != 0) {
 					temp = temp / 10;
 					ele_count ++;
 				}
 			}
 			else ele_count = 1;
+			//printf("%d\n", ele_count);
 			while (count[c] > ele_count) {
 				printf(" ");
 				ele_count ++;

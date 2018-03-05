@@ -23,13 +23,19 @@ int main(int argc, char **argv) {
 
 	temp = make_translate(-100, -100, 0);
 	matrix_mult(temp, trans);
-	print_matrix(temp);
-	print_matrix(trans);
-	//temp = make_scale(2, 2, 1);
-	temp = make_rotZ(45);
+	free_matrix(temp);
+	temp = make_scale(2, 2, 1);
 	matrix_mult(temp, trans);
+	free_matrix(temp);
+	temp = make_rotZ(25);
+	matrix_mult(temp, trans);
+	free_matrix(temp);
+	temp = make_rotX(45);
+	matrix_mult(temp, trans);
+	free_matrix(temp);
 	temp = make_translate(100, 100, 0);
 	matrix_mult(temp, trans);
+	free_matrix(temp);
 
 	// Square
 	add_edge(edges, 100, 100, 0, 150, 100, 0);
@@ -44,7 +50,7 @@ int main(int argc, char **argv) {
 	draw_lines(edges, s, c);
 	display(s);
 
+	print_matrix(edges);
 	free_matrix(edges);
 	free_matrix(trans);
-	free_matrix(temp);
 }  

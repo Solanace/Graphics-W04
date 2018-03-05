@@ -61,33 +61,29 @@ void parse_file (char *filename,
 	FILE *f;
 	char line[256];
 	color c;
-	c.red = 100;
-	c.blue = 50;
-	c.green = 10;
+	c.red = 201;
+	c.blue = 94;
+	c.green = 183;
 
 	if (strcmp(filename, "stdin") == 0) f = stdin;
 	else f = fopen(filename, "r");
 	while (fgets(line, 255, f) != NULL) {
 		line[strlen(line) - 1] = '\0';
-		printf(":%s:\n", line);
 		if (strcmp(line, "line") == 0) {
 			fgets(line, 255, f);
 			line[strlen(line) - 1] = '\0';
 			double x0, y0, z0, x1, y1, z1;
 			sscanf(line, "%lf %lf %lf %lf %lf %lf", &x0, &y0, &z0, &x1, &y1, &z1);
-			//printf("%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n", x0, y0, z0, x1, y1, z1);
 			add_edge(edges, x0, y0, z0, x1, y1, z1);
 		}
 		else if (strcmp(line, "ident") == 0) {
 			ident(trans);
-			print_matrix(trans);
 		}
 		else if (strcmp(line, "scale") == 0) {
 			fgets(line, 255, f);
 			line[strlen(line) - 1] = '\0';
 			double sx, sy, sz;
 			sscanf(line, "%lf %lf %lf", &sx, &sy, &sz);
-			//printf("%0.2f %0.2f %0.2f\n", sx, sy, sz);
 			temp = make_scale(sx, sy, sz);
 			matrix_mult(temp, trans);
 			free_matrix(temp);
@@ -97,7 +93,6 @@ void parse_file (char *filename,
 			line[strlen(line) - 1] = '\0';
 			double tx, ty, tz;
 			sscanf(line, "%lf %lf %lf", &tx, &ty, &tz);
-			//printf("%0.2f %0.2f %0.2f\n", tx, ty, tz);
 			temp = make_translate(tx, ty, tz);
 			matrix_mult(temp, trans);
 			free_matrix(temp);
@@ -108,7 +103,6 @@ void parse_file (char *filename,
 			char axis;
 			double theta;
 			sscanf(line, "%c %lf", &axis, &theta);
-			//printf("%c %0.2f\n", axis, theta);
 			if (axis == 'x') temp = make_rotX(theta);
 			else if (axis == 'y') temp = make_rotY(theta);
 			else if (axis == 'z') temp = make_rotZ(theta);

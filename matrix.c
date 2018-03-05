@@ -98,7 +98,7 @@ print the matrix
 void print_matrix(struct matrix *m) {
 	int r, c;
 	int count[m->cols]; // For each column, count stores the number of chars the biggest number takes
-	for (c = 0; c < m->cols; c ++) {
+	for (c = 0; c < m->lastcol; c ++) {
 		count[c] = 0;
 		int tempA; // copy of each element in the matrix
 		for (r = 0; r < m->rows; r ++) {
@@ -115,7 +115,7 @@ void print_matrix(struct matrix *m) {
 	}
 	for (r = 0; r < m->rows; r ++) {
 		printf("[");
-		for (c = 0; c < m->cols; c ++) {
+		for (c = 0; c < m->lastcol; c ++) {
 			int ele_count = 0;
 			int temp = m->m[r][c];
 			//printf("ele_count of %d: ", temp);
@@ -133,7 +133,7 @@ void print_matrix(struct matrix *m) {
 				ele_count ++;
 			}
 			printf("%0.2f", m->m[r][c]);
-			if (c < m->cols - 1) {
+			if (c < m->lastcol - 1) {
 				printf("  ");
 			}
 		}
@@ -260,7 +260,7 @@ newcols number of collumns
 void grow_matrix(struct matrix *m, int newcols) {
 	int i;
 	for (i = 0; i < m->rows; i++) {
-		m->m[i] = realloc(m->m[i], newcols *sizeof(double));
+		m->m[i] = realloc(m->m[i], newcols * sizeof(double));
 	}
 	m->cols = newcols;
 }

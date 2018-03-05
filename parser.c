@@ -22,13 +22,14 @@ The file follows the following format:
      Every command is a single character that takes up a line
      Any command that requires arguments must have those arguments in the second line.
      The commands are as follows:
-         line: add a line to the edge matrix - 
-	    takes 6 arguemnts (x0, y0, z0, x1, y1, z1)
-	 ident: set the transform matrix to the identity matrix - 
+
+     line: add a line to the edge matrix - 
+	    takes 6 arguments (x0, y0, z0, x1, y1, z1)
+	 ident: set the transform matrix to the identity matrix
 	 scale: create a scale matrix, 
-	    then multiply the transform matrix by the scale matrix - 
+	    then multiply the transform matrix by the scale matrix
 	    takes 3 arguments (sx, sy, sz)
-	 translate: create a translation matrix, 
+	 move: create a translation matrix, 
 	    then multiply the transform matrix by the translation matrix - 
 	    takes 3 arguments (tx, ty, tz)
 	 rotate: create an rotation matrix,
@@ -52,23 +53,84 @@ humans use degrees, so the file will contain degrees for rotations,
 be sure to conver those degrees to radians (M_PI is the constant
 for PI)
 ====================*/
-void parse_file ( char * filename, 
-                  struct matrix * transform, 
-                  struct matrix * edges,
-                  screen s) {
+void parse_file (char *filename, 
+                 struct matrix *trans, 
+                 struct matrix *edges,
+                 screen s) {
+	struct matrix *temp;
+	FILE *f;
+	char line[256];
+	color c;
+	c.red = 100;
+	c.blue = 50;
+	c.green = 10;
 
-  FILE *f;
-  char line[256];
-  clear_screen(s);
-
-  if ( strcmp(filename, "stdin") == 0 ) 
-    f = stdin;
-  else
-    f = fopen(filename, "r");
-  
-  while ( fgets(line, 255, f) != NULL ) {
-    line[strlen(line)-1]='\0';
-    printf(":%s:\n",line);
-  }
+	if (strcmp(filename, "stdin") == 0) f = stdin;
+	else f = fopen(filename, "r");
+	while (fgets(line, 255, f) != NULL) {
+		line[strlen(line) - 1] = '\0';
+		printf(":%s:\n", line);
+		if (strcmp(line, "line") == 0) {
+			fgets(line, 255, f);
+			line[strlen(line) - 1] = '\0';
+			double x0, y0, z0, x1, y1, z1;
+			sscanf(line, "%lf %lf %lf %lf %lf %lf", &x0, &y0, &z0, &x1, &y1, &z1);
+			//printf("%0.2f %0.2f %0.2f %0.2f %0.2f %0.2f\n", x0, y0, z0, x1, y1, z1);
+			add_edge(edges, x0, y0, z0, x1, y1, z1);
+		}
+		else if (strcmp(line, "ident") == 0) {
+			ident(trans);
+			print_matrix(trans);
+		}
+		else if (strcmp(line, "scale") == 0) {
+			fgets(line, 255, f);
+			line[strlen(line) - 1] = '\0';
+			double sx, sy, sz;
+			sscanf(line, "%lf %lf %lf", &sx, &sy, &sz);
+			//printf("%0.2f %0.2f %0.2f\n", sx, sy, sz);
+			temp = make_scale(sx, sy, sz);
+			matrix_mult(temp, trans);
+			free_matrix(temp);
+		}
+		else if (strcmp(line, "move") == 0) {
+			fgets(line, 255, f);
+			line[strlen(line) - 1] = '\0';
+			double tx, ty, tz;
+			sscanf(line, "%lf %lf %lf", &tx, &ty, &tz);
+			//printf("%0.2f %0.2f %0.2f\n", tx, ty, tz);
+			temp = make_translate(tx, ty, tz);
+			matrix_mult(temp, trans);
+			free_matrix(temp);
+		}
+		else if (strcmp(line, "rotate") == 0) {
+			fgets(line, 255, f);
+			line[strlen(line) - 1] = '\0';
+			char axis;
+			double theta;
+			sscanf(line, "%c %lf", &axis, &theta);
+			//printf("%c %0.2f\n", axis, theta);
+			if (axis == 'x') temp = make_rotX(theta);
+			else if (axis == 'y') temp = make_rotY(theta);
+			else if (axis == 'z') temp = make_rotZ(theta);
+			matrix_mult(temp, trans);
+			free_matrix(temp);
+		}
+		else if (strcmp(line, "apply") == 0) {
+			matrix_mult(trans, edges);
+		}
+		
+		else if (strcmp(line, "display") == 0) {
+			clear_screen(s);
+			draw_lines(edges, s, c);
+			display(s);
+		}
+		else if (strcmp(line, "save") == 0) {
+			fgets(line, 255, f);
+			line[strlen(line) - 1] = '\0';
+			save_extension(s, line);
+		}
+		else if (strcmp(line, "quit") == 0) {
+			exit(0);
+		}
+	}
 }
-  

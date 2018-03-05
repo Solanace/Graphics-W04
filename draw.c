@@ -16,7 +16,7 @@ adds point (x, y, z) to points and increment points.lastcol
 if points is full, should call grow on points
 ====================*/
 void add_point(struct matrix * points, double x, double y, double z) {
-	if (points->lastcol == points->cols) grow_matrix(points, points->cols * 2);
+	if (points->lastcol == points->cols) grow_matrix(points, points->cols * 20);
 	points->lastcol ++;
 	points->m[0][points->lastcol - 1] = x;
 	points->m[1][points->lastcol - 1] = y;
@@ -53,6 +53,10 @@ void draw_lines(struct matrix * points, screen s, color c) {
 }
 
 void draw_line(int x0, int y0, int x1, int y1, screen s, color c) {
+	if (x0 == x1 && y0 == y1) {
+		plot(s, c, x0, y1);
+		return;
+	}
 	if (x0 == x1) { // Vertical line
 		if (y0 < y1) {
 			while (y0 <= y1) {

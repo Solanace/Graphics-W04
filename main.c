@@ -11,46 +11,13 @@
 int main(int argc, char **argv) {
 	screen s;
 	color c;
-	struct matrix *edges, *trans, *temp;
-
-	clear_screen(s);
-	c.red = 200;
-	c.blue = 75;
-	c.green = 20;
-	edges = new_matrix(4, 1);
+	struct matrix *trans, *edges;
 	trans = new_matrix(4, 4);
-	ident(trans);
+	edges = new_matrix(4, 1);
 
-	temp = make_translate(-100, -100, 0);
-	matrix_mult(temp, trans);
-	free_matrix(temp);
-	temp = make_scale(2, 2, 1);
-	matrix_mult(temp, trans);
-	free_matrix(temp);
-	temp = make_rotZ(25);
-	matrix_mult(temp, trans);
-	free_matrix(temp);
-	temp = make_rotX(45);
-	matrix_mult(temp, trans);
-	free_matrix(temp);
-	temp = make_translate(100, 100, 0);
-	matrix_mult(temp, trans);
-	free_matrix(temp);
-
-	// Square
-	add_edge(edges, 100, 100, 0, 150, 100, 0);
-	add_edge(edges, 150, 150, 0, 150, 100, 0);
-	add_edge(edges, 100, 150, 0, 150, 150, 0);
-	add_edge(edges, 100, 100, 0, 100, 150, 0);
-
-	draw_lines(edges, s, c);
+	if (argc == 2) parse_file(argv[1], trans, edges, s);
+	else parse_file("stdin", trans, edges, s);
 	
-	c.red = 100;
-	matrix_mult(trans, edges);
-	draw_lines(edges, s, c);
-	display(s);
-
-	print_matrix(edges);
-	free_matrix(edges);
 	free_matrix(trans);
+	free_matrix(edges);
 }  
